@@ -1,5 +1,6 @@
 <h2>Products</h2>
 
+<!-- basicamente um for each loop-->
 <div *ngFor="let product of products">
 
   <h3>
@@ -8,6 +9,7 @@
     </a>
   </h3>
 
+  <!-- condicional se o produto tiver descriçao-->
   <p *ngIf="product.description">
     Description: {{ product.description }}
   </p>
@@ -17,15 +19,18 @@
   </button>
 
   <app-product-alerts
-    [product]="product">
+    [product]="product"
+    (notify)="onNotify(product)">
   </app-product-alerts>
-
 </div>
 
 
 <!-- 
+
 *ngFor
 *ngIf
 Interpolation {{ }}
 Property binding [ ]
-Event binding ( )--> 
+Event binding ( )
+
+--> 
