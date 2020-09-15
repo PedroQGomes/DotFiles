@@ -3,7 +3,6 @@
 
 
 <p>
-    
     <a routerLink="/shipping"> Shipping Prices </a>
 </p>
 
@@ -14,3 +13,30 @@
     <span>{{ item.price | currency }}</span>
 
 </div>
+
+
+<form [formGroup]="checkOutForm" (ngSubmit)="onSubmit(checkOutForm.value)">
+    <div>
+        <label for="name">
+            Name
+        </label>
+
+        <!-- caixa de texto para o utilizador por o nome dele-->
+        <input id="name" type="text" formControlName="name">
+    </div>
+
+
+    <div>
+        <label for="address">
+            Address
+        </label>
+        <!-- caixa de texto para o utilizador por o nome dele-->
+        <input id="address" type="text" formControlName="address">
+    </div>
+
+    <button class="button" type="submit">
+        Purchase
+    </button>
+
+</form>
+
