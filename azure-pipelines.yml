@@ -1,4 +1,11 @@
 # Node.js with Angular
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Azure for Students(e94b7493-17aa-477a-8e71-c44460c92982)'
+    appType: 'webApp'
+    WebAppName: 'angular-deployment'
+    packageForLinux: 'dist/angular-project/'
 - task: NodeTool@0
   inputs:
     versionSpec: '6.x'
