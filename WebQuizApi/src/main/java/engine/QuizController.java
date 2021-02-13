@@ -38,7 +38,7 @@ public class QuizController {
             return allQuiz.get(id);
 
         }else {
-            throw new QuizNotFound();
+            throw new QuizNotFound("no such quiz");
         }
     }
 
@@ -60,7 +60,7 @@ public class QuizController {
         if(allQuiz.containsKey(id)){
             quiz = allQuiz.get(id);
         }else {
-            throw new QuizNotFound();
+            throw new QuizNotFound("no such quiz");
         }
 
         if(quiz.getAnswer()==answer){
