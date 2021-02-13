@@ -1,16 +1,37 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Quiz {
 
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private int id;
+
     private String title;
+
     private String text;
+
     private String[] options;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private int answer;
 
-    public Quiz(String title,String text,String[] opt){
-        this.title =title;
-        this.text = text;
-        this.options = opt;
+
+    public int getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(int answer) {
+        this.answer = answer;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -35,5 +56,16 @@ public class Quiz {
 
     public void setOptions(String[] options) {
         this.options = options;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+
+        if (obj == null)
+            return false;
+
+        Quiz quiz = (Quiz) obj;
+        return this.id == quiz.id;
     }
 }
