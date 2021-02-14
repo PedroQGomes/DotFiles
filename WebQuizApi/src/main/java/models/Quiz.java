@@ -2,27 +2,43 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.*;
+import java.util.List;
+
 public class Quiz {
 
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int id;
 
+    @NotBlank(message = "Title cannot be blank")
     private String title;
 
+    @NotBlank(message = "Text cannot be blank")
     private String text;
 
-    private String[] options;
+    @NotNull(message = "options cannot be null")
+    @Size(min=2,message = "should contain at least 2 items")
+    private List<String> options;
+
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private int answer;
+    private List<Integer> answer;
 
 
-    public int getAnswer() {
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<String> options) {
+        this.options = options;
+    }
+
+    public List<Integer> getAnswer() {
         return answer;
     }
 
-    public void setAnswer(int answer) {
+    public void setAnswer(List<Integer> answer) {
         this.answer = answer;
     }
 
@@ -50,13 +66,6 @@ public class Quiz {
         this.text = text;
     }
 
-    public String[] getOptions() {
-        return options;
-    }
-
-    public void setOptions(String[] options) {
-        this.options = options;
-    }
 
     @Override
     public boolean equals(Object obj) {

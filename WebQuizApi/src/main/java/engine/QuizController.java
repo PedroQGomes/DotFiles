@@ -3,10 +3,12 @@ package engine;
 import exceptions.QuizNotFound;
 import models.Answer;
 import models.Quiz;
+import models.SolveQuiz;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +25,10 @@ public class QuizController {
 
     //adicionar um novo quiz
     @PostMapping(path = "/api/quizzes")
-    public Quiz setQuiz(@RequestBody Quiz quiz){
+    public Quiz setQuiz(@Valid @RequestBody Quiz quiz){
 
         quiz.setId(nextid.incrementAndGet());
         allQuiz.put(quiz.getId(),quiz);
-        System.out.println("adicionar" + quiz.getId());
         return quiz;
     }
 
@@ -54,7 +55,7 @@ public class QuizController {
 
 
     @PostMapping(path = "/api/quizzes/{id}/solve")
-    public Answer getAnswer(@PathVariable int id,@RequestParam("answer") int answer){
+    public Answer getAnswer(@PathVariable int id,@Valid @RequestBody SolveQuiz answer){
 
         Quiz quiz;
         if(allQuiz.containsKey(id)){
@@ -63,13 +64,21 @@ public class QuizController {
             throw new QuizNotFound("no such quiz");
         }
 
-        if(quiz.getAnswer()==answer){
-            return new Answer(true,"Congratulations, you're right!");
-        }{
-            return new Answer(false,"Wrong answer! Please, try again.");
+        if(quiz.getAnswer()==null && answer.getAnswer().size() ==0){
+            return new Answer(true, "Congratulations, you're right!");
         }
 
+        if(quiz.getAnswer()==null && answer.getAnswer().size() > 0){
+            return new Answer(false, "Wrong answer! Please, try again.");
+        }
 
+        boolean resposta = quiz.getAnswer().equals(answer.getAnswer());
+
+        if(resposta) {
+            return new Answer(true, "Congratulations, you're right!");
+        }else {
+            return new Answer(false, "Wrong answer! Please, try again.");
+        }
     }
 
 
