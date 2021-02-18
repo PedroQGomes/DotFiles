@@ -2,27 +2,35 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.List;
+import java.util.Random;
 
+@Entity
 public class Quiz {
 
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private int id;
+    @Id
+    private int id = new Random().nextInt(Integer.MAX_VALUE);
 
     @NotBlank(message = "Title cannot be blank")
+    @Column
     private String title;
 
     @NotBlank(message = "Text cannot be blank")
+    @Column
     private String text;
 
     @NotNull(message = "options cannot be null")
     @Size(min=2,message = "should contain at least 2 items")
+    @ElementCollection
     private List<String> options;
 
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ElementCollection
     private List<Integer> answer;
 
 
