@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -21,6 +22,8 @@ public class User {
     @Size(min = 5)
     @Column
     private String password;
+
+    private String role;
 
 
     public String getEmail() {
@@ -38,4 +41,15 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }
+
+

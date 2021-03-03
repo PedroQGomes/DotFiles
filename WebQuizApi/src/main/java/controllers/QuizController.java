@@ -5,9 +5,14 @@ import models.Answer;
 import models.Quiz;
 import models.SolveQuiz;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import services.QuizService;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,8 +28,8 @@ public class QuizController {
 
     //adicionar um novo quiz
     @PostMapping(path = "/api/quizzes")
-    public Quiz setQuiz(@Valid @RequestBody Quiz quiz){
-
+    public Quiz setQuiz(@Valid @RequestBody Quiz quiz,@AuthenticationPrincipal UserDetails userDetails){
+        quiz.setOwner(userDetails.getUsername());
         quizService.saveQuiz(quiz);
         return quiz;
     }
@@ -80,6 +85,27 @@ public class QuizController {
             return new Answer(false, "Wrong answer! Please, try again.");
         }
     }
+
+
+    @DeleteMapping(path = "/api/quizzes/{id}")
+    public void deleteQuiz(@PathVariable int id,@AuthenticationPrincipal UserDetails userDetails,HttpServletResponse response){
+
+        Quiz q = quizService.getQuiz(id);
+
+        if(q == null){
+            throw new QuizNotFound("no such quiz");
+        }
+
+        if(!userDetails.getUsername().equals(q.getOwner())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to be the creator of the quiz");
+        }
+
+        quizService.deleteQuiz(q);
+        response.setStatus(HttpStatus.NO_CONTENT.value());
+
+
+    }
+
 
 
 

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories("repository")
 @EntityScan("models")
-@ComponentScan(basePackages = {"engine","services","controllers"})
+@ComponentScan(basePackages = {"engine","services","controllers","config"})
 public class WebquizApplication {
 
     public static void main(String[] args) {

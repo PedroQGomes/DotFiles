@@ -34,4 +34,8 @@ public class QuizService {
         return quizRepository.findAll().size();
     }
 
+    public void deleteQuiz(Quiz quiz){
+        quizRepository.delete(quiz);
+    }
+
 }

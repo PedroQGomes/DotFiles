@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -13,7 +14,8 @@ public class Quiz {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Id
-    private int id = new Random().nextInt(Integer.MAX_VALUE);
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @NotBlank(message = "Title cannot be blank")
     @Column
@@ -33,6 +35,17 @@ public class Quiz {
     @ElementCollection
     private List<Integer> answer;
 
+    @JsonIgnore
+    private String owner;
+
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 
     public List<String> getOptions() {
         return options;
