@@ -2,9 +2,14 @@ package services;
 
 import models.Quiz;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import repository.QuizRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,15 +32,19 @@ public class QuizService {
     }
 
     public List<Quiz> getAllQuiz(){
-        return quizRepository.findAll();
+        return (List<Quiz>) quizRepository.findAll();
     }
 
-    public int getLastId(){
-        return quizRepository.findAll().size();
-    }
 
     public void deleteQuiz(Quiz quiz){
         quizRepository.delete(quiz);
+    }
+
+    public Page<Quiz> getAllQuizPage(Integer pageNo, Integer pageSize) {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by("id").ascending());
+
+        return quizRepository.findAll(paging);
+
     }
 
 }

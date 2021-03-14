@@ -4,13 +4,16 @@ import exceptions.QuizNotFound;
 import models.Answer;
 import models.Quiz;
 import models.SolveQuiz;
+import models.Solved;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import services.QuizService;
+import services.SolvedService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -25,6 +28,9 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
+
+    @Autowired
+    private SolvedService solvedService;
 
     //adicionar um novo quiz
     @PostMapping(path = "/api/quizzes")
@@ -46,13 +52,13 @@ public class QuizController {
     }
 
     @GetMapping(path = "/api/quizzes")
-    public List<Quiz> getALLQuiz(){
-        return quizService.getAllQuiz();
+    public Page<Quiz> getALLQuiz(@RequestParam(name = "page",defaultValue = "0") Integer page){
+        return quizService.getAllQuizPage(page,10);
     }
 
 
     @PostMapping(path = "/api/quizzes/{id}/solve")
-    public Answer getAnswer(@PathVariable int id,@Valid @RequestBody SolveQuiz answer){
+    public Answer getAnswer(@PathVariable int id,@Valid @RequestBody SolveQuiz answer,@AuthenticationPrincipal UserDetails userDetails){
 
         Quiz quiz = quizService.getQuiz(id);
         if(quiz == null){
@@ -62,10 +68,12 @@ public class QuizController {
 
 
         if(quiz.getAnswer()==null && answer.getAnswer().size() == 0){
+            solvedService.saveRightAnswer(userDetails.getUsername(),quiz.getId());
             return new Answer(true, "Congratulations, you're right!");
         }
 
         if(quiz.getAnswer().size()==0 && answer.getAnswer().size() == 0){
+            solvedService.saveRightAnswer(userDetails.getUsername(),quiz.getId());
             return new Answer(true, "Congratulations, you're right!");
         }
 
@@ -80,6 +88,7 @@ public class QuizController {
         boolean resposta = actual.equals(given);
 
         if(resposta) {
+            solvedService.saveRightAnswer(userDetails.getUsername(),quiz.getId());
             return new Answer(true, "Congratulations, you're right!");
         }else {
             return new Answer(false, "Wrong answer! Please, try again.");
@@ -107,7 +116,9 @@ public class QuizController {
     }
 
 
-
-
+    @GetMapping(path = "/api/quizzes/completed")
+    public Page<Solved> getALLSolved(@RequestParam(name = "page",defaultValue = "0") Integer page, @AuthenticationPrincipal UserDetails userDetails){
+        return solvedService.getAllSolvedPage(page,10,userDetails.getUsername());
+    }
 
 }
