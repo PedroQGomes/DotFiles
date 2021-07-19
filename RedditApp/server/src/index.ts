@@ -32,18 +32,12 @@ const main = async () =>{
     
 
     app.listen(4000,() =>{
-        console.log("server started at porst 4000")
-
+        console.log("server started at port 4000")
     })
-
-
-    
 
 };
 
 main();
-console.log("hello world")
-
 
 //const post = orm.em.create(Post,{title:"my first post"}); insere um post na bd
 //await orm.em.persistAndFlush(post);
