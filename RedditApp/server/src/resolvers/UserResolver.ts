@@ -18,10 +18,10 @@ class UsernamePasswordInput {
 class FieldError {
 
     @Field()
-    field:String;
+    field:string;
 
     @Field()
-    message:String;
+    message:string;
 }
 
 @ObjectType()
@@ -72,7 +72,7 @@ export class UserResolver{//
 
 
     @Mutation(() => UserResponse) 
-    async login(@Ctx() {em}: MyContext, @Arg('options') options : UsernamePasswordInput): Promise<UserResponse>
+    async login(@Ctx() {em,req}: MyContext, @Arg('options') options : UsernamePasswordInput): Promise<UserResponse>
     {
         const user = await em.findOne(User,{username:options.username});
         
@@ -97,6 +97,8 @@ export class UserResolver{//
                 ]
             }
         }
+
+        req.session.userId = user.id;
 
         return {
             user,
