@@ -10,26 +10,34 @@ import {
 import {Formik,Form,Field,} from 'formik'
 import Wrapper from '../components/Wrapper'
 import InputFiled from '../components/InputFiled'
+import { useRegisterMutation } from '../generated/graphql'
+import {toErrorMap} from '../utils/toErrorMap'
+import { useRouter } from 'next/dist/client/router'
 
 interface registerProps {
 
 }
 
+
+
 const Register:React.FC<registerProps> = ({}) => {
+    
+    const [,register] = useRegisterMutation();
 
-    const validateUsername = () =>{
-
-    }
+    const router = useRouter();
 
     return (
-    <Wrapper varient="samll">
+    <Wrapper varient="small">
         <Formik
             initialValues={{ username: "",password:"" }}
-            onSubmit={(values, actions) => {
-                setTimeout(() => {
-                alert(JSON.stringify(values, null, 2))
-                actions.setSubmitting(false)
-                }, 1000)
+            onSubmit={async (values, {setErrors}) => {
+                const resposta = await register({registerOptions: values});
+                if(resposta.data?.register.errors){
+                    setErrors(toErrorMap(resposta.data.register.errors));
+                }else if (resposta.data?.register.user){
+                    router.push("/");
+                }
+
             }}>
         
         {(props) => (
