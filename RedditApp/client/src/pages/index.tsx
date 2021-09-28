@@ -9,12 +9,14 @@ import {
 import { CheckCircleIcon, LinkIcon } from '@chakra-ui/icons'
 
 import { DarkModeSwitch } from '../components/DarkModeSwitch'
+import  NavBar  from '../components/NavBar'
 
 
 const Index = () => (
   <div>
+    <NavBar /> 
     home page
-    <DarkModeSwitch />
+    
   </div>
 
     
