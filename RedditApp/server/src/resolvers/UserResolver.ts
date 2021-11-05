@@ -2,6 +2,7 @@ import { Ctx, Resolver,Arg, Mutation, InputType, Field, ObjectType, Query } from
 import { MyContext } from "src/types";
 import { User } from "../entities/User";
 import argon2 from 'argon2';
+import { COOKIE_NAME } from "../constant";
 
 
 @InputType()
@@ -116,6 +117,22 @@ export class UserResolver{//
         
         var user = em.findOne(User,{id:req.session.userId});
         return user;
+    }
+
+
+    @Mutation(() => Boolean, {nullable:true})
+    async logout(@Ctx() {req,res}: MyContext){
+        return new Promise(resolve => req.session.destroy(
+            (err) =>{
+                res.clearCookie(COOKIE_NAME);
+                if(err){
+                    console.log(err);
+                    resolve(false)
+                    return;
+                }
+                resolve(true)
+            }
+        ))
     }
 
 }
