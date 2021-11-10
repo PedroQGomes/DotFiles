@@ -7,8 +7,9 @@ import {
   ListItem,
 } from '@chakra-ui/react'
 import { CheckCircleIcon, LinkIcon } from '@chakra-ui/icons'
-
+import { withUrqlClient } from 'next-urql';
 import { DarkModeSwitch } from '../components/DarkModeSwitch'
+import { createUrqlClient } from '../utils/createUrqlClient'
 import  NavBar  from '../components/NavBar'
 
 
@@ -23,4 +24,4 @@ const Index = () => (
     
 )
 
-export default Index
+export default withUrqlClient(createUrqlClient) (Index)
