@@ -3,10 +3,13 @@ import React from 'react'
 import NextLink from 'next/link'
 import { useLogoutMutation,useMeQuery } from '../generated/graphql'
 import { Button } from "@chakra-ui/react"
+import { isServer } from '../utils/isServer'
 
 const NavBar = () => {
     const [{fetching :logoutFetching},logout] = useLogoutMutation();
-    const [{data,fetching}] = useMeQuery();
+    const [{data,fetching}] = useMeQuery({
+        pause: isServer(),
+    });
 
     let body = null;
      if (!data?.me){ // nao esta logado ou fetching

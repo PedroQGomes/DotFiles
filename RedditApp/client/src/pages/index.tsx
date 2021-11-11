@@ -22,9 +22,10 @@ const Index = () => {
     <div>
       <NavBar /> 
         home page
+        <br/>
         {!data ? null : data.posts.map(post => (<div key={post.id}> {post.title}</div> ))}
     </div>
   
   )}
 
-export default withUrqlClient(createUrqlClient) (Index)
+export default withUrqlClient(createUrqlClient,{ ssr:true }) (Index)
