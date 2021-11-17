@@ -33,7 +33,8 @@ export class UserResolver{//
 
     @Mutation(()=>Boolean) 
     async forgotPassword(@Arg("email") email:string,@Ctx() { em }:MyContext){
-        //const user = await em.findOne(User,{email});
+        const user = await em.findOne(User,{email});
+        console.log(user);
         return true;
     }
 
