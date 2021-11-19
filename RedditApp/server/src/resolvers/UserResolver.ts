@@ -2,10 +2,11 @@ import { Ctx, Resolver,Arg, Mutation, Field, ObjectType, Query } from "type-grap
 import { MyContext } from "src/types";
 import { User } from "../entities/User";
 import argon2 from 'argon2';
-import { COOKIE_NAME } from "../constant";
+import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constant";
 import { UsernamePasswordInput } from "../utils/UsernamePasswordInput";
 import { validateRegister } from "../utils/validateRegister";
-
+import { sendEmail } from "../utils/sendEmail";
+import { v4 } from "uuid";
 
 @ObjectType()
 class FieldError {
@@ -32,9 +33,19 @@ class UserResponse{
 export class UserResolver{//
 
     @Mutation(()=>Boolean) 
-    async forgotPassword(@Arg("email") email:string,@Ctx() { em }:MyContext){
+    async forgotPassword(@Arg("email") email:string,@Ctx() { em,redis }:MyContext){
         const user = await em.findOne(User,{email});
-        console.log(user);
+        if(!user){
+            // the email is not in the db
+            return true;
+        }
+
+        // send email to user with the token
+        const token =  v4();
+
+        await redis.set(FORGOT_PASSWORD_PREFIX + token,user.id, "ex",1000*60*60*24*3);//3 days
+
+        sendEmail(email,`<a href="http://localhost:3000/user/change-password/${token}">reset password</a>`);
         return true;
     }
 
@@ -79,7 +90,7 @@ export class UserResolver{//
             return{
                 errors:[
                     {
-                        field: "username",
+                        field: "usernameOrEmail",
                         message: "Username doesnt exist",
                     },
                 ]

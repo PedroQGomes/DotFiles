@@ -7,7 +7,7 @@ import {ApolloServer} from "apollo-server-express"
 import { buildSchema } from "type-graphql";
 import { PostResolver } from "./resolvers/PostResolver";
 import {UserResolver} from './resolvers/UserResolver';
-import redis from 'redis';
+import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis'; 
 import cors from 'cors'
@@ -24,7 +24,7 @@ const main = async () =>{
     
 
     const RedisStore = connectRedis(session)
-    const redisClient = redis.createClient()
+    const redis = new Redis();
     
     app.use(cors({
         origin:"http://localhost:3000",
@@ -35,7 +35,7 @@ const main = async () =>{
     app.use(
     session({
         name:COOKIE_NAME,
-        store: new RedisStore({ client: redisClient,disableTouch: true  }),
+        store: new RedisStore({ client: redis,disableTouch: true  }),
         cookie: { maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
             httpOnly:true,
             sameSite: 'lax',    //csrf
@@ -52,7 +52,7 @@ const main = async () =>{
             validate:false
 
         }),
-        context:({req,res}) =>({em: orm.em,req,res}), // o contexto serve para por objectos que podem ser acedidos por todos os resolvers do graphql
+        context:({req,res}) =>({em: orm.em,req,res,redis}), // o contexto serve para por objectos que podem ser acedidos por todos os resolvers do graphql
     });
 
     await apolloServer.start();

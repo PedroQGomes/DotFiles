@@ -1,7 +1,7 @@
 import { UsernamePasswordInput } from "src/utils/UsernamePasswordInput"
 
 export const validateRegister = (options: UsernamePasswordInput) => {
-    if(!options.email.includes("@")){
+        if(!options.email.includes("@")){
             return [{field:"email",message:"wrong email format"}];
             
         }
@@ -11,6 +11,12 @@ export const validateRegister = (options: UsernamePasswordInput) => {
             return [{field:"username",message:"length must be greater then 2"}];
             
         }
+
+        if(options.username.includes("@")){
+            return [{field:"username",message:"username cannot contain @ sign"}];
+            
+        }
+
         if(options.password.includes("@")){
             return [{field:"password",message:"cannot contain @ sign"}];
             
