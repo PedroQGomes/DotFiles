@@ -32,6 +32,55 @@ class UserResponse{
 @Resolver()
 export class UserResolver{//
 
+    @Mutation(()=>UserResponse)
+    async changePassword(@Arg("token") token:string,@Arg("newPassword") newPassword:string,@Ctx() { redis,em,req }:MyContext):Promise<UserResponse>{
+        
+        if(newPassword.length <= 2){
+            return{ errors: [
+                {
+                    field:"newPassword",
+                    message:"password must be greater than 2 characters"
+                }
+            ]
+        }}
+
+        const key = FORGOT_PASSWORD_PREFIX + token;
+        const userId = await redis.get(key);
+        
+        
+        if(!userId){
+            return {
+                errors:[{
+                    field:"token",
+                    message:"token expired"
+                }]
+            }
+        }
+
+        const user = await em.findOne(User,{id:parseInt(userId)});
+
+        if(!user){
+            return {
+                errors:[{
+                    field:"token",
+                    message:"user no longer exists"
+                }]
+            }
+        }
+        user.password = await argon2.hash(newPassword);
+
+        await em.persistAndFlush(user);
+
+        await redis.del(key); // elimina a chave do redis para o link nao voltar a ser valido
+
+        req.session.userId = user.id;
+
+
+        return {user};
+    }
+
+
+
     @Mutation(()=>Boolean) 
     async forgotPassword(@Arg("email") email:string,@Ctx() { em,redis }:MyContext){
         const user = await em.findOne(User,{email});
@@ -45,7 +94,7 @@ export class UserResolver{//
 
         await redis.set(FORGOT_PASSWORD_PREFIX + token,user.id, "ex",1000*60*60*24*3);//3 days
 
-        sendEmail(email,`<a href="http://localhost:3000/user/change-password/${token}">reset password</a>`);
+        sendEmail(email,`<a href="http://localhost:3000/change-password/${token}">reset password</a>`);
         return true;
     }
 
