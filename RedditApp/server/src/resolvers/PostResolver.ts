@@ -1,36 +1,32 @@
-import { Ctx, Query, Resolver,Arg, Mutation } from "type-graphql";
+import { Query, Resolver,Arg, Mutation } from "type-graphql";
 import{ Post } from "../entities/Post"
-import { MyContext } from "src/types";
-
 
 @Resolver()
 export class PostResolver{
 
     // Query para aceder a todos os Posts.
     @Query(() => [Post]) // tipo de output que a query retorna
-    posts( @Ctx() {em}: MyContext): Promise<Post[]> // Contexto para ter acesso ao type orm e dps é type checking da query pelo Ts
+    posts(): Promise<Post[]> // Contexto para ter acesso ao type orm e dps é type checking da query pelo Ts
     {
-        return em.find(Post,{});
+        return Post.find();
     }
 
     // Query para aceder a um post com um dado id
     @Query(() => Post,{ nullable:true }) 
     post(
         @Arg('id') id: number, 
-        @Ctx() {em}: MyContext ): Promise<Post | null> 
+        ): Promise<Post | undefined> 
     {
-        return em.findOne(Post,{id});
+        return Post.findOne(id);
     }
 
     // Criaçao de um novo Post
     @Mutation(() => Post) 
     async creatPost(
         @Arg('title') title: string, // Arg(key) value
-        @Ctx() {em}: MyContext ): Promise<Post> 
+         ): Promise<Post> 
     {
-        const post = em.create(Post,{title})
-        await em.persistAndFlush(post);
-        return post;
+        return Post.create({title}).save();
     }
 
 
@@ -39,16 +35,15 @@ export class PostResolver{
     async updatePost(
         @Arg('id') id: number,
         @Arg('title',() => String,{ nullable:true }) title: string, // Arg(key) value
-        @Ctx() {em}: MyContext ): Promise<Post | null> 
+         ): Promise<Post | null> 
     {
-        const post = await em.findOne(Post,{id})
+        const post = await Post.findOne(id)
         if(!post){
             return null;
         }
 
         if(typeof title !== "undefined"){
-            post.title = title;
-            await em.persistAndFlush(post);
+            await Post.update({id},{title});
         }
         return post;
     }
@@ -57,9 +52,9 @@ export class PostResolver{
     @Mutation(() => Boolean) 
     async deletePostById(
         @Arg('id') id: number,
-        @Ctx() {em}: MyContext ): Promise<boolean> 
+        ): Promise<boolean> 
     {
-        await em.nativeDelete(Post,{id});
+        await Post.delete(id);
 
         return true;
     }
