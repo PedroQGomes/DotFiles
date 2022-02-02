@@ -7,7 +7,6 @@ import { UsernamePasswordInput } from "../utils/UsernamePasswordInput";
 import { validateRegister } from "../utils/validateRegister";
 import { sendEmail } from "../utils/sendEmail";
 import { v4 } from "uuid";
-import { getConnection } from "typeorm";
 
 @ObjectType()
 class FieldError {
@@ -114,15 +113,17 @@ export class UserResolver{//
 
         const passwordHashed = await argon2.hash(options.password);
         let user;
+        
         try{
-           const result =  await getConnection().createQueryBuilder().insert().into(User).values({
-                username: options.username,
-                email: options.email,
-                password: passwordHashed
-           }).returning('*').execute();
+              user = await User.create({username: options.username,email: options.email,password: passwordHashed}).save();
+        //    const result =  await getConnection().createQueryBuilder().insert().into(User).values({
+        //         username: options.username,
+        //         email: options.email,
+        //         password: passwordHashed
+        //    }).returning('*').execute();
 
-           user = result.raw[0];
-           console.log(result);
+        //    user = result.raw[0];
+           
         }catch(err){
             if(err.code === '23505' || err.detail.includes("already exists")){
                 return {
@@ -131,7 +132,7 @@ export class UserResolver{//
             }
         }
 
-        req.session.userId = user.id;
+        req.session.userId = user?.id;
 
         return {user};
 
