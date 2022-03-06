@@ -1,7 +1,8 @@
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "src/types";
-import { Query, Resolver,Arg, Mutation, InputType, Ctx,Field, UseMiddleware } from "type-graphql";
+import { Query, Resolver,Arg, Mutation, InputType, Ctx,Field, UseMiddleware, Int } from "type-graphql";
 import{ Post } from "../entities/Post"
+import { getConnection } from "typeorm";
 
 
 @InputType()
@@ -17,9 +18,20 @@ export class PostResolver{
 
     // Query para aceder a todos os Posts.
     @Query(() => [Post]) // tipo de output que a query retorna
-    posts(): Promise<Post[]> // Contexto para ter acesso ao type orm e dps é type checking da query pelo Ts
+    posts(@Arg('limit',()=> Int) limit :number,@Arg('cursor',()=> String, {nullable:true} ) cursor :string | null ): Promise<Post[]> // Contexto para ter acesso ao type orm e dps é type checking da query pelo Ts
     {
-        return Post.find();
+
+        const realLimit = Math.min(50,limit);
+        const qb =  getConnection()
+            .getRepository(Post)
+            .createQueryBuilder("p")
+            .orderBy('p.createdAt', 'DESC')
+            .take(realLimit)
+
+        if(cursor){
+            qb.where('p.createdAt < :cursor', { cursor: new Date(parseInt(cursor)) });
+        }
+        return qb.getMany();
     }
 
     // Query para aceder a um post com um dado id
