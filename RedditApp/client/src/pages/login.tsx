@@ -36,7 +36,11 @@ const Login:React.FC<{}> = ({}) => {
                     //console.log(resposta.data?.login.errors);
                     setErrors(toErrorMap(resposta.data.login.errors));
                 }else if (resposta.data?.login.user){
-                    router.push("/");
+                     if(typeof router.query.next === 'string'){
+                        router.push(router.query.next);
+                    }else{
+                        router.push("/");   
+                    }
                 }
 
             }}>
