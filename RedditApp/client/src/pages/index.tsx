@@ -17,7 +17,7 @@ import NextLink  from 'next/link';
 
 const Index = () => {
 
-  const [{data, fetching}] = usePostsQuery();
+  const [{data, fetching}] = usePostsQuery({variables:{limit:10}});
   
   return (
     <Layout>
@@ -29,7 +29,7 @@ const Index = () => {
         <br/>
         home page
         <br/>
-        {!data ? null : data.posts.map(post => (<div key={post.id}> {post.title}</div> ))}
+        {!data ? null : data.posts.map(post => (<div key={post.id}> {post.title} - {post.text}</div> ))}
     </Layout>
   
   )}
