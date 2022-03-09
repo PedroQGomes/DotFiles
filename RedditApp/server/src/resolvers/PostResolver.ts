@@ -1,6 +1,6 @@
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "src/types";
-import { Query, Resolver,Arg, Mutation, InputType, Ctx,Field, UseMiddleware, Int } from "type-graphql";
+import { Query, Resolver,Arg, Mutation, InputType, Ctx,Field, UseMiddleware, Int, FieldResolver, Root } from "type-graphql";
 import{ Post } from "../entities/Post"
 import { getConnection } from "typeorm";
 
@@ -13,8 +13,14 @@ class PostInput {
     text:string;
 }
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver{
+
+    @FieldResolver(()=>String)
+    textSnippet(@Root() post: Post){
+        return post.text.slice(0,50); // return the first 50 characters of the text
+    }
+
 
     // Query para aceder a todos os Posts.
     @Query(() => [Post]) // tipo de output que a query retorna
