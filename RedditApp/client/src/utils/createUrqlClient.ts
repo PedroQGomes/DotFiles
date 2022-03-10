@@ -1,5 +1,5 @@
-import { cacheExchange  } from "@urql/exchange-graphcache";
-import { dedupExchange,fetchExchange,Exchange} from "urql";
+import { cacheExchange, Resolver, Cache } from "@urql/exchange-graphcache";
+import { dedupExchange,fetchExchange,Exchange,stringifyVariables} from "urql";
 import {
   LoginMutation,
   LogoutMutation,
@@ -23,6 +23,41 @@ const errorExchange: Exchange = ({ forward }) => (ops$) => {
   );
 };
 
+const cursorPagination = (): Resolver => {
+  return (_parent, fieldArgs, cache, info) => {
+    const { parentKey: entityKey, fieldName } = info;
+    const allFields = cache.inspectFields(entityKey);
+    const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
+    const size = fieldInfos.length;
+    if (size === 0) {
+      return undefined;
+    }
+
+    const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
+    const isItInTheCache = cache.resolve(entityKey,fieldKey);
+    info.partial = !isItInTheCache;
+    // let hasMore = true;
+    
+    const results: string[] = [];
+    fieldInfos.forEach((fi) => {
+      // const key = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string;
+      const data = cache.resolve(entityKey, fi.fieldKey) as string[];
+      // const _hasMore = cache.resolve(key, "hasMore");
+      // // if (!_hasMore) {
+      // //   hasMore = _hasMore as boolean;
+      // // }
+      results.push(...data);
+    });
+
+    return results;
+    // return {
+    //   __typename: "PaginatedPosts",
+    //   hasMore,
+    //   posts: results,
+    // };
+  };
+};
+
 
 
 export const createUrqlClient = (_ssrExchange:any) => ({
@@ -31,6 +66,11 @@ export const createUrqlClient = (_ssrExchange:any) => ({
         credentials:"include" as const,
     },
     exchanges: [dedupExchange, cacheExchange({
+        resolvers: { // vai correr smp que a query dos posts é chamada
+            Query: {
+                posts: cursorPagination(),
+            }
+        },
         updates:{
             Mutation:{
             logout: (_result, args, cache, info) =>{

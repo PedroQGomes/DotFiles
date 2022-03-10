@@ -26,6 +26,7 @@ const Index = () => {
   const [variables, setvariables] = useState({ limit:10, cursor:null as null | string});
   const [{data, fetching}] = usePostsQuery({variables});
   
+  console.log()
 
   if(!fetching && !data){
     return (<Layout> data query failed </Layout>)
