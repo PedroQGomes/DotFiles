@@ -1,4 +1,4 @@
-import { Ctx, Resolver,Arg, Mutation, Field, ObjectType, Query } from "type-graphql";
+import { Ctx, Resolver,Arg, Mutation, Field, ObjectType, Query, FieldResolver, Root } from "type-graphql";
 import { MyContext } from "src/types";
 import { User } from "../entities/User";
 import argon2 from 'argon2';
@@ -29,8 +29,20 @@ class UserResponse{
 
 
 
-@Resolver()
+@Resolver(User)
 export class UserResolver{//
+
+    
+
+    @FieldResolver(() => String)
+    email(@Root() user:User, @Ctx(){req}:MyContext){ // only show email to the user and not to everyone
+        if(req.session.userId === user.id){
+            return user.email;
+        }
+
+        return "";
+    }
+
 
     @Mutation(()=>UserResponse)
     async changePassword(@Arg("token") token:string,@Arg("newPassword") newPassword:string,@Ctx() { redis,req }:MyContext):Promise<UserResponse>{
