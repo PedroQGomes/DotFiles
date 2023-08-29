@@ -116,5 +116,8 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 cd /mnt/c/dev/
 
+git config --global --add oh-my-zsh.hide-status 1
+git config --global --add oh-my-zsh.hide-dirty 1
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
