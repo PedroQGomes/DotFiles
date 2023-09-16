@@ -1,4 +1,0 @@
-fragment RegularError on FieldError {
-  message
-  field
-}

@@ -129,18 +129,9 @@ complete -F __kube_namespaces kubens
 
 export KUBECONFIG=/home/pedro/.kube/config
 
-__switchk3s(){
-  KUBECONFIG=/home/pedro/.kube/k3s-config.yaml
-}
-
-
-alias k3sConfig=__switchk3s
 alias k=kubectl
 alias ks=kubens
 alias kx=kubectx  
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
