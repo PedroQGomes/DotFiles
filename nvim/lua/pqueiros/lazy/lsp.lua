@@ -39,7 +39,8 @@ return {
                 "lua_ls",
                 "eslint",
                 "gopls",
-                "tsserver"
+                "tsserver",
+                "jdtls"
             },
             handlers = {
                 function(server_name) -- default handler (optional)

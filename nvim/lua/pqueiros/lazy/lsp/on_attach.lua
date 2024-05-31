@@ -19,7 +19,7 @@ M.on_attach = function(_, bufnr)
     nmap("<leader>q", vim.diagnostic.setloclist, "Open diagnostic [Q]uickfix list")
     nmap("<leader>d", vim.diagnostic.goto_next, "Go to next [D]iagnostic message")
 
-    map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+    nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
 	nmap("K", vim.lsp.buf.hover, "Hover Documentation")
 end
