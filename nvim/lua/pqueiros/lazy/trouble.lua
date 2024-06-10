@@ -10,11 +10,11 @@ return {
                 require("trouble").toggle()
             end)
 
-            vim.keymap.set("n", "[t", function()
+            vim.keymap.set("n", "<leader>ty", function()
                 require("trouble").next({skip_groups = true, jump = true});
             end)
 
-            vim.keymap.set("n", "]t", function()
+            vim.keymap.set("n", "<leader>tr", function()
                 require("trouble").previous({skip_groups = true, jump = true});
             end)
 
